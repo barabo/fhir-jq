@@ -11,11 +11,16 @@ favorite command line shell!
 
 ## Example
 
-With the module installed where `jq` can find it, you can work with FHIR
-resources more easily by taking advantage of predefined helper functions.
+An example goes a long way.  Here's one that shows how you might extract
+the data needed for an OMOPCDM `visit_occurrence` from a FHIR Encounter
+resource.
+
+As long as you have the module installed on the default `jq` module import
+path, this should work.
 
 ```bash
 cat Encounter.json | fhir-jq '
+
 #
 # Convert a FHIR R4 Encounter into an OMOPCDM 5.4 visit_occurrence record.
 #
@@ -28,12 +33,12 @@ include "fhir/common";       # for: primary_participant, reference_id
 #   OMOPCDM visit_occurrence column   FHIR Encounter data mapping
     "visit_occurrence_id":            .id,
     "person_id":                      .subject | reference_id,
-    "visit_concept_id":               "REQUIRED",
-    "visit_start_date":               "REQUIRED",
+    "visit_concept_id":               "TODO: REQUIRED",
+    "visit_start_date":               "TODO: REQUIRED",
     "visit_start_datetime":           null,
-    "visit_end_date":                 "REQUIRED",
+    "visit_end_date":                 "TODO: REQUIRED",
     "visit_end_datetime":             null,
-    "visit_type_concept_id":          "REQUIRED",
+    "visit_type_concept_id":          "TODO: REQUIRED",
     "provider_id":                    primary_participant | .id,
     "care_site_id":                   null,
     "visit_source_value":             null,
