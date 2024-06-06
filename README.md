@@ -6,8 +6,7 @@
 
 
 # fhir-jq
-A [jq module] to make it easier to work with FHIR resources in `jq` in your
-favorite command line shell!
+A [jq module] to make it easier to work with FHIR resources in `jq`!
 
 ## Example
 
