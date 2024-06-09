@@ -26,43 +26,45 @@ cat Encounter.json | fhir-jq '
 include "fhir";         # for: Encounter
 include "fhir/common";  # for: primary_participant, reference_id
 
+# OMOPCDM requires only Encounters having a concept_code in the "Visit"
+# domain be included in the visit_occurrence table.
+def visit_coding: (
+  .type[].coding[] |
+  if .concept.domain_id != "Visit" then
+    # 'empty' is like a 'continue' statement in other languages.  It
+    # causes this whole Encounter to not be included in output.
+    empty
+  end
+);
+
+def visit: visit_coding.concept;
+
 Encounter
 | {
 #   OMOPCDM visit_occurrence column   FHIR Encounter data mapping
     visit_occurrence_id:              .id | tonumber,
     person_id:                        .subject | reference_id,
+    visit_concept_id:                 visit.concept_id,
+    visit_start_date:                 .period.start,
+    visit_start_datetime:             .period.start,
+    visit_end_date:                   .period.end,
+    visit_end_datetime:               .period.end,
+    visit_type_concept_id:            32827,  # OMOP4976900 - EHR encounter record
+    provider_id:                      primary_participant | .id,
+    care_site_id:                     .serviceProvider | reference_id,
 
-    # OMOPCDM requires only Encounters having a concept_code in the
-    # "Visit" domain be included in the visit_occurrence table.
-    visit_concept_id: (
-      .type[].coding[].concept
-      | if .domain_id == "Visit" then
-          .concept_id
-         else
-           # 'empty' is like a 'continue' statement in other
-           # languages.  It causes this whole Encounter to not be
-           # included in output.
-           empty
-         end
-    ),
-
-    visit_start_date:                .period.start,
-    visit_start_datetime:            .period.start,
-    visit_end_date:                  .period.end,
-    visit_end_datetime:              .period.end,
-    visit_type_concept_id:           32827,  # OMOP4976900 - EHR encounter record
-    provider_id:                     primary_participant | .id,
-    care_site_id:                    .serviceProvider | reference_id,
+# The SNOMED (or whatever terminology code system) code and concept_id.
+# This can be used to review the appropriateness of the mapping later.
+    visit_source_value:               visit_coding.code,
+    visit_source_concept_id:          visit_coding.source.concept_id,
 
 # The following are TODO, and can either be updated in later ETL, or mapped from
 # available fields in the Encounter resource.
-    visit_source_value:              null,
-    visit_source_concept_id:         null,
-    admitted_from_concept_id:        null,
-    admitted_from_source_value:      null,
-    discharged_to_concept_id:        null,
-    discharged_to_source_value:      null,
-    preceding_visit_occurrence_id:   null
+    admitted_from_concept_id:         null,
+    admitted_from_source_value:       null,
+    discharged_to_concept_id:         null,
+    discharged_to_source_value:       null,
+    preceding_visit_occurrence_id:    null
   }
 '
 ```
