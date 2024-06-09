@@ -17,7 +17,7 @@ resource.
 As long as you have the module installed on the default `jq` module import
 path, this should work.
 
-```bash
+```jq
 cat Encounter.json | fhir-jq '
 
 #
@@ -50,9 +50,12 @@ Encounter
     visit_start_datetime:            .period.start,
     visit_end_date:                  .period.end,
     visit_end_datetime:              .period.end,
-    visit_type_concept_id:           "TODO: REQUIRED",
+    visit_type_concept_id:           32827,  # OMOP4976900 - EHR encounter record
     provider_id:                     primary_participant | .id,
     care_site_id:                    .serviceProvider | reference_id,
+
+# The following are TODO, and can either be updated in later ETL, or mapped from
+# available fields in the Encounter resource.
     visit_source_value:              null,
     visit_source_concept_id:         null,
     admitted_from_concept_id:        null,
