@@ -1,0 +1,39 @@
+{
+  "coding": {
+    "concepts": {
+      "value": true,
+      "default": true,
+      "comment": [
+        "When enabled, resource definitions may chose to inject concepts",
+        "into 'coding' codes.  This is not an automatic insertion of concepts",
+        "anywhere there is a code system pair - the resource filter must",
+        "intentionally check this setting and then inject the concept."
+      ]
+    }
+  },
+  "debug": {
+    "value": false,
+    "default": false,
+    "comment": [
+      "When enabled, debug messages may be emitted to stderr."
+    ]
+  },
+  "resource": {
+    "tryNumericalId": {
+      "value": true,
+      "default": true,
+      "comment": [
+        "When enabled, attempts to convert resource 'id' values to numerical",
+        "values, ignoring failures."
+      ]
+    }
+  }
+}
+
+{
+  "repo": "https://github.com/barabo/fhir-jq",
+  "file": "module/config.json",
+  "comments": [
+    "Everything beyond the first object in this file is ignored!"
+  ]
+}
