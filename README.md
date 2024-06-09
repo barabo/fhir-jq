@@ -71,7 +71,7 @@ As always, remember to source the file after you have made changes to it.
 
 ```bash
 # The fhir-jq installation directory.
-FHIR_JQ="~/.jq/fhir"
+export FHIR_JQ="${HOME}/.jq/fhir"
 mkdir -p "${FHIR_JQ}"
 
 ##
