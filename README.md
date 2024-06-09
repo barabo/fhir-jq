@@ -26,18 +26,26 @@ cat Encounter.json | fhir-jq '
 include "fhir";         # for: Encounter
 include "fhir/common";  # for: primary_participant, reference_id
 
+
 # OMOPCDM requires only Encounters having a concept_code in the "Visit"
 # domain be included in the visit_occurrence table.
-def visit_coding: (
+def visit_coding:
   .type[].coding[] |
   if .concept.domain_id != "Visit" then
     # 'empty' is like a 'continue' statement in other languages.  It
     # causes this whole Encounter to not be included in output.
     empty
   end
-);
+;
 
+
+# An alias for the concept of a qualifying Visit coding.
 def visit: visit_coding.concept;
+#
+# NOTE: the two helper functions above could probably be refactored into
+#       a separate omopcdm jq module if they are useful elsewhere.
+#
+
 
 Encounter
 | {
@@ -59,7 +67,7 @@ Encounter
     visit_source_concept_id:          visit_coding.source.concept_id,
 
 # The following are TODO, and can either be updated in later ETL, or mapped from
-# available fields in the Encounter resource.
+# available fields in the Encounter resource.  These are not required columns.
     admitted_from_concept_id:         null,
     admitted_from_source_value:       null,
     discharged_to_concept_id:         null,
