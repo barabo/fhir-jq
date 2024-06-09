@@ -23,30 +23,43 @@ cat Encounter.json | fhir-jq '
 #
 # Convert a FHIR R4 Encounter into an OMOPCDM 5.4 visit_occurrence record.
 #
-include "fhir/r4/resource";  # for: Encounter
-include "fhir/common";       # for: primary_participant, reference_id
+include "fhir";         # for: Encounter
+include "fhir/common";  # for: primary_participant, reference_id
 
-.
-| Encounter 
+Encounter
 | {
 #   OMOPCDM visit_occurrence column   FHIR Encounter data mapping
-    "visit_occurrence_id":            .id,
-    "person_id":                      .subject | reference_id,
-    "visit_concept_id":               "TODO: REQUIRED",
-    "visit_start_date":               "TODO: REQUIRED",
-    "visit_start_datetime":           null,
-    "visit_end_date":                 "TODO: REQUIRED",
-    "visit_end_datetime":             null,
-    "visit_type_concept_id":          "TODO: REQUIRED",
-    "provider_id":                    primary_participant | .id,
-    "care_site_id":                   null,
-    "visit_source_value":             null,
-    "visit_source_concept_id":        null,
-    "admitted_from_concept_id":       null,
-    "admitted_from_source_value":     null,
-    "discharged_to_concept_id":       null,
-    "discharged_to_source_value":     null,
-    "preceding_visit_occurrence_id":  null
+    visit_occurrence_id:              .id | tonumber,
+    person_id:                        .subject | reference_id,
+
+    # OMOPCDM requires only Encounters having a concept_code in the
+    # "Visit" domain be included in the visit_occurrence table.
+    visit_concept_id: (
+      .type[].coding[].concept
+      | if .domain_id == "Visit" then
+          .concept_id
+         else
+           # 'empty' is like a 'continue' statement in other
+           # languages.  It causes this whole Encounter to not be
+           # included in output.
+           empty
+         end
+    ),
+
+    visit_start_date:                .period.start,
+    visit_start_datetime:            .period.start,
+    visit_end_date:                  .period.end,
+    visit_end_datetime:              .period.end,
+    visit_type_concept_id:           "TODO: REQUIRED",
+    provider_id:                     primary_participant | .id,
+    care_site_id:                    .serviceProvider | reference_id,
+    visit_source_value:              null,
+    visit_source_concept_id:         null,
+    admitted_from_concept_id:        null,
+    admitted_from_source_value:      null,
+    discharged_to_concept_id:        null,
+    discharged_to_source_value:      null,
+    preceding_visit_occurrence_id:   null
   }
 '
 ```
