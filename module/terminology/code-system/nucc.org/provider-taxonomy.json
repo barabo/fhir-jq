@@ -1,2 +1,14 @@
-{}
-
+{
+  "208D00000X": {
+    "concept_id": 38004022,
+    "concept_name": "Allopathic & Osteopathic Physicians, General Practice",
+    "domain_id": "Provider",
+    "vocabulary_id": "NUCC",
+    "concept_class_id": "Physician Specialty",
+    "standard_concept": "",
+    "concept_code": "208D00000X",
+    "valid_start_date": 19700101,
+    "valid_end_date": 20991231,
+    "invalid_reason": ""
+  }
+}

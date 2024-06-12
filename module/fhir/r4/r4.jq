@@ -63,14 +63,14 @@ def FHIR_R4_PractitionerRole(config):
   # Convert the id to a number, or leave it as is.
   | .id |= (tonumber? // .)
 
-  # Insert the NPI, if present.
-  | .npi = (.identifier[0].value | tonumber? // .)
+  # Inject concepts for the specialty and code.
+  | .code |= injectConcepts
+  | .specialty |= injectConcepts
 
-  # Combine the name parts into a full name.
-  | .full_name = (.name[0] | "\(.prefix[0]) \(.given[0]) \(.family)")
-
-  # Inject the concept_id for gender.
-  | .gender_concept_id = if .gender = "male" then 8507 else 8532 end
+  # Dereference any useful ids.
+  | .location_ids = [.location[] | dereference]
+  | .organizaton_id = (.organization | dereference)
+  | .practitioner_id = (.practitioner | dereference)
 ;
 
 

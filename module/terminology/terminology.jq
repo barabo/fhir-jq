@@ -49,8 +49,10 @@ def concept:
     "ERROR: not a known code-system: '\(.system)'\n"
     | halt_error(32)
   elif code_system[.system][.code] == null then
-    "ERROR: concept_code '\(.code)' not in '\(.system)' terminology file."
-    | halt_error(42)
+    debug("ERROR: concept_code '\(.code)' not in '\(.system)' terminology file.")
+# For collecting missing codes, use debug, otherwise its fine to halt on error.
+#    "ERROR: concept_code '\(.code)' not in '\(.system)' terminology file."
+#    | halt_error(42)
   else
     code_system[.system][.code]
   end
