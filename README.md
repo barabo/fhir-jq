@@ -1,6 +1,7 @@
 [//]: # ( COMMENT: URL references used in this README)
 [Coherent]: https://doi.org/10.3390/electronics11081199
 [demo project]: https://github.com/barabo/fhir-to-omop-demo
+[exercism]: https://exercism.org/tracks/jq
 [installation notes]: https://github.com/jqlang/jq?tab=readme-ov-file#installation
 [jq module]: https://github.com/jqlang/jq?tab=readme-ov-file#installation
 
@@ -279,8 +280,7 @@ The recommended place for the scripts provided in `fhir-jq/bin` is `/usr/local/b
 
 ### Learning `jq`.
 
-If this project excites you but you don't know `jq` - I recommend giving the
-`jq` [exercism](https://exercism.org/tracks/jq) track a look.
+If this project excites you but you don't know `jq` - check out the `jq` [exercism] track.
 
 ---
 ### Feedback
@@ -321,12 +321,12 @@ There are no extra required packages or tools to be able to contribute to this p
 This section provides an overview of the project directory layout.  More
 details may be found within `README.md` documents within each directory.
 
-#### `fhir-jq`
-The `fhir-jq` directory contains the `fhir-jq.sh` script, and a `fhir-jq`
+#### `fhir-jq/`
+The `fhir-jq/bin` directory contains the `fhir-jq.sh` script, and a `fhir-jq`
 symlink that points to it.  So, you can substitute `fhir-jq.sh` wherever you
 see `fhir-jq` in examples.
 
-There is a new `terminology.sh` helper script here, too.  With that you can
+There is a new `terminology.sh` helper script here, too.  With that, you can
 control the loaded terminology sets available to `fhir-jq`.
 
 #### `module/`
@@ -351,7 +351,7 @@ gh repo clone barabo/fhir-jq
 export FHIR_JQ="${HOME}/code/fhir-jq/module"
 ```
 
-#### `terminology`
+#### `terminology/`
 FHIR resources include coded terminology, which are used to categorize and
 add context to resources.  In the top example in this README an `Encounter`
 resource contains a SNOMED coding which looks like this.
