@@ -24,11 +24,24 @@ cat Encounter.json | fhir-jq '
 # Convert a FHIR R4 Encounter into an OMOPCDM 5.4 visit_occurrence record.
 #
 include "fhir";         # for: Encounter
-include "fhir/common";  # for: primary_participant, reference_id
+include "fhir/common";  # for: dereference
 
 
+##
+# Returns the dereferenced id of the primary performer.
+#
+def primary_performer_id:
+  .participant[]
+  | select(.type[].coding[].code == "PPRF")
+  | .individual
+  | dereference
+;
+
+
+##
 # OMOPCDM requires only Encounters having a concept_code in the "Visit"
 # domain be included in the visit_occurrence table.
+#
 def visit_coding:
   .type[].coding[] |
   if .concept.domain_id != "Visit" then
@@ -42,7 +55,7 @@ def visit_coding:
 # An alias for the concept of a qualifying Visit coding.
 def visit: visit_coding.concept;
 #
-# NOTE: the two helper functions above could probably be refactored into
+# NOTE: the helper functions above could probably be refactored into
 #       a separate omopcdm jq module if they are useful elsewhere.
 #
 
@@ -51,15 +64,15 @@ Encounter
 | {
 #   OMOPCDM visit_occurrence column   FHIR Encounter data mapping
     visit_occurrence_id:              .id | tonumber,
-    person_id:                        .subject | reference_id,
+    person_id:                        .subject | dereference,
     visit_concept_id:                 visit.concept_id,
     visit_start_date:                 .period.start,
     visit_start_datetime:             .period.start,
     visit_end_date:                   .period.end,
     visit_end_datetime:               .period.end,
     visit_type_concept_id:            32827,  # OMOP4976900 - EHR encounter record
-    provider_id:                      primary_participant | .id,
-    care_site_id:                     .serviceProvider | reference_id,
+    provider_id:                      primary_performer_id,
+    care_site_id:                     .serviceProvider | dereference,
 
 # The SNOMED (or whatever terminology code system) code and concept_id.
 # This can be used to review the appropriateness of the mapping later.
@@ -77,6 +90,131 @@ Encounter
 '
 ```
 
+<details><summary>Click to see the contents of the input Encounter...</summary>
+
+```json
+{
+  "resourceType": "Encounter",
+  "id": "4218",
+  "meta": {
+    "versionId": "1",
+    "lastUpdated": "2024-06-01T20:19:17.304+00:00",
+    "source": "#8IRCgpLiSxJLv3VD",
+    "profile": [
+      "http://hl7.org/fhir/us/core/StructureDefinition/us-core-encounter"
+    ]
+  },
+  "identifier": [
+    {
+      "use": "official",
+      "system": "https://github.com/synthetichealth/synthea",
+      "value": "fe6a5bc3-6637-e625-daff-07fbd65c6b81"
+    }
+  ],
+  "status": "finished",
+  "class": {
+    "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+    "code": "AMB"
+  },
+  "type": [
+    {
+      "coding": [
+        {
+          "system": "http://snomed.info/sct",
+          "code": "185349003",
+          "display": "Encounter for check up (procedure)"
+        }
+      ],
+      "text": "Encounter for check up (procedure)"
+    }
+  ],
+  "subject": {
+    "reference": "Patient/4217",
+    "display": "Mr. Humberto482 Koss676"
+  },
+  "participant": [
+    {
+      "type": [
+        {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+              "code": "PPRF",
+              "display": "primary performer"
+            }
+          ],
+          "text": "primary performer"
+        }
+      ],
+      "period": {
+        "start": "1959-02-22T06:37:53-05:00",
+        "end": "1959-02-22T06:52:53-05:00"
+      },
+      "individual": {
+        "reference": "Practitioner/2187",
+        "display": "Dr. Douglass930 Windler79"
+      }
+    }
+  ],
+  "period": {
+    "start": "1959-02-22T06:37:53-05:00",
+    "end": "1959-02-22T06:52:53-05:00"
+  },
+  "location": [
+    {
+      "location": {
+        "reference": "Location/54",
+        "display": "MERCY MEDICAL CTR"
+      }
+    }
+  ],
+  "serviceProvider": {
+    "reference": "Organization/53",
+    "display": "MERCY MEDICAL CTR"
+  }
+}
+```
+
+<details><summary>Click to see the expected results...</summary>
+
+---
+This is the correct answer:
+```json
+```
+
+Trick question!  Remember, this encounter did *not* qualify as a `Visit`, so we emitted
+an `empty` and the entire record was skipped.
+
+However, if we *invert* the criteria to *exclude* all visit encounters, it would result in
+json that looks like this:
+
+```json
+{
+  "visit_occurrence_id": 4218,
+  "person_id": 4217,
+  "visit_concept_id": 4085799,
+  "visit_start_date": "1959-02-22T06:37:53-05:00",
+  "visit_start_datetime": "1959-02-22T06:37:53-05:00",
+  "visit_end_date": "1959-02-22T06:52:53-05:00",
+  "visit_end_datetime": "1959-02-22T06:52:53-05:00",
+  "visit_type_concept_id": 32827,
+  "provider_id": 2187,
+  "care_site_id": 53,
+  "visit_source_value": "185349003",
+  "visit_source_concept_id": null,
+  "admitted_from_concept_id": null,
+  "admitted_from_source_value": null,
+  "discharged_to_concept_id": null,
+  "discharged_to_source_value": null,
+  "preceding_visit_occurrence_id": null
+}
+```
+
+</details>
+
+</details>
+
+---
 ## Installation
 <details><summary>Click to see installation details...</summary>
 
@@ -183,9 +321,19 @@ There are no extra required packages or tools to be able to contribute to this p
 This section provides an overview of the project directory layout.  More
 details may be found within `README.md` documents within each directory.
 
+#### `fhir-jq`
+The `fhir-jq` directory contains the `fhir-jq.sh` script, and a `fhir-jq`
+symlink that points to it.  So, you can substitute `fhir-jq.sh` wherever you
+see `fhir-jq` in examples.
+
+There is a new `terminology.sh` helper script here, too.  With that you can
+control the loaded terminology sets available to `fhir-jq`.
+
 #### `module/`
-The `module` directory contains all the files that are installed onto a users
-system.
+The `module` directory contains all the files that `jq` needs.  `jq` will
+ignore any files here that do not end with either `.json` or `.jq`, so the
+presence of `.gitignore` files (or whatever) will not affect how `jq`
+behaves.
 
 So, you can set your `${FHIR_JQ}` environment variable to resolve to a
 `module` directory within a clone of this repo.  Then, by switching `git`
@@ -200,10 +348,151 @@ cd ~/code/
 gh repo clone barabo/fhir-jq
 
 # Update the env-var you specified in your shell .rc file.
-export FHIR_JQ="~/code/fhir-jq/module"
+export FHIR_JQ="${HOME}/code/fhir-jq/module"
 ```
 
+#### `terminology`
+FHIR resources include coded terminology, which are used to categorize and
+add context to resources.  In the top example in this README an `Encounter`
+resource contains a SNOMED coding which looks like this.
 
+```json
+{
+  "system": "http://snomed.info/sct",
+  "code": "185349003",
+  "display": "Encounter for check up (procedure)"
+}
+```
+
+The terminology for the SNOMED code system is stored in `terminology/code-system/snomed.info/sct.json`
+and contains an entry like this:
+
+```json
+{
+...
+  "185349003": {
+    "concept_id": 4085799,
+    "concept_name": "Encounter for check up",
+    "domain_id": "Observation",
+    "vocabulary_id": "SNOMED",
+    "concept_class_id": "Procedure",
+    "standard_concept": "S",
+    "concept_code": "185349003",
+    "valid_start_date": 20020131,
+    "valid_end_date": 20991231,
+    "invalid_reason": ""
+  }
+...
+}
+```
+
+The `snomed.info/sct` submodule is imported into the `terminology` module in `terminology.jq` like this:
+
+```jq
+import "loinc.org"                  as $loinc            { search: "./code-system" };
+import "nucc.org/provider-taxonomy" as $nucc_p           { search: "./code-system" };
+import "snomed.info/sct"            as $sct              { search: "./code-system" };  # <----
+import "urn:ietf:bcp:47"            as $urn_ietf_bcp_47  { search: "./code-system" };
+
+
+##
+# Maps a code system URI to the imported terminology cache.
+#
+def code_system:
+{
+# Here are some examples.  Uncomment these are you need them.
+  "http://loinc.org":                  $loinc            [],
+  "http://nucc.org/provider-taxonomy": $nucc_p           [],
+  "http://snomed.info/sct":            $sct              [],  # <----
+  "urn:ietf:bcp:47":                   $urn_ietf_bcp_47  []
+};
+```
+
+This allows us to load any number of terminology code systems, and use any subset of the
+codes that we want.  We do not need to load codes that we will never use!
+
+<details><summary>Click for a deeper dive into how this works...</summary>
+
+The logic injects the mapped code system objects into the document while it is processing
+them.
+
+```jq
+##
+# Returns the concept mapped to the current .code and .system,
+# which has been cached in a data file imported by this module.
+#
+def concept:
+  if .code == null then
+    "ERROR: . has no 'code' key! . = \(.)\n"
+    | halt_error(1)
+  elif .system == null then
+    "ERROR: . has no 'system' key! . = \(.)\n"
+    | halt_error(1)
+  elif code_system[.system] == null then
+    "ERROR: not a known code-system: '\(.system)'\n"
+    | halt_error(32)
+  elif code_system[.system][.code] == null then
+    debug("ERROR: concept_code '\(.code)' not in '\(.system)' terminology file.")
+  else
+    code_system[.system][.code]
+  end
+;
+
+
+##
+# Injects concepts into an array of objects with a system and code key.
+#
+def injectConcept:
+  map(.concept = concept)
+;
+
+
+##
+# Injects concepts into an array of objects with a coding array.
+#
+def injectConcepts:
+  map(.coding |= injectConcept)
+;
+```
+
+In other words, the transformed codable goes from this:
+
+```json
+{
+  "system": "http://snomed.info/sct",
+  "code": "185349003",
+  "display": "Encounter for check up (procedure)"
+}
+```
+
+to this:
+
+```json
+{
+  "system": "http://snomed.info/sct",
+  "code": "185349003",
+  "display": "Encounter for check up (procedure)",
+  "concept": {
+    "concept_id": 4085799,
+    "concept_name": "Encounter for check up",
+    "domain_id": "Observation",
+    "vocabulary_id": "SNOMED",
+    "concept_class_id": "Procedure",
+    "standard_concept": "S",
+    "concept_code": "185349003",
+    "valid_start_date": 20020131,
+    "valid_end_date": 20991231,
+    "invalid_reason": ""
+  }
+}
+```
+
+Having the concept included in the object allows us to categorize this
+Encounter as an observation while it is being read.
+
+</details>
+
+---
 #### `tests/`
 `jq` natively supports running a series of simple tests which are read from
 a file, which is passed to the `--run-tests` flag.  This module uses that
