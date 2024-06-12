@@ -30,3 +30,5 @@ include "fhir/r4";
 # Allows filters like: 'import "fhir"; Encounter'
 ###############################################################################
 def Encounter: FHIR_R4_Encounter($cfg[0]);
+def Practitioner: FHIR_R4_Practitioner($cfg[0]);
+def PractitionerRole: FHIR_R4_PractitionerRole($cfg[0]);

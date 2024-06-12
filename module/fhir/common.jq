@@ -15,8 +15,8 @@ module {
 #
 def FHIR_Resource(type; config):
   # TODO: sanity-check config
-  if .resourceType != "Encounter" then
-    "ERROR: \( $__loc__ ): not an Encounter: resourceType = '\(.resourceType)'\n"
+  if .resourceType != type then
+    "ERROR: \( $__loc__ ): type \(type) <> resourceType = '\(.resourceType)'\n"
     | halt_error(1)
   end
 ;

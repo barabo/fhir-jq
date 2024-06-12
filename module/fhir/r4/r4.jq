@@ -34,9 +34,53 @@ def FHIR_R4_Encounter(config):
 ;
 
 
+##
+# A FHIR Practitioner with a reference to the fhir-jq config.
+#
+def FHIR_R4_Practitioner(config):
+    FHIR_Resource("Practitioner"; config)
+
+  # Convert the id to a number, or leave it as is.
+  | .id |= (tonumber? // .)
+
+  # Insert the NPI, if present.
+  | .npi = (.identifier[0].value | tonumber? // .)
+
+  # Combine the name parts into a full name.
+  | .full_name = (.name[0] | "\(.prefix[0]) \(.given[0]) \(.family)")
+
+  # Inject the concept_id for gender.
+  | .gender_concept_id = if .gender = "male" then 8507 else 8532 end
+;
+
+
+##
+# A FHIR Practitioner with a reference to the fhir-jq config.
+#
+def FHIR_R4_PractitionerRole(config):
+    FHIR_Resource("PractitionerRole"; config)
+
+  # Convert the id to a number, or leave it as is.
+  | .id |= (tonumber? // .)
+
+  # Insert the NPI, if present.
+  | .npi = (.identifier[0].value | tonumber? // .)
+
+  # Combine the name parts into a full name.
+  | .full_name = (.name[0] | "\(.prefix[0]) \(.given[0]) \(.family)")
+
+  # Inject the concept_id for gender.
+  | .gender_concept_id = if .gender = "male" then 8507 else 8532 end
+;
+
+
 # 0-arity aliases to inject the fhir-jq config.
 def FHIR_R4_Encounter: FHIR_R4_Encounter($cfg[0]);
+def FHIR_R4_Practitioner: FHIR_R4_Practitioner($cfg[0]);
+def FHIR_R4_PractitionerRole: FHIR_R4_PractitionerRole($cfg[0]);
 
 
 # Aliases to allow not specifying the revision for each Resource type.
 def Encounter: FHIR_R4_Encounter;
+def Practitioner: FHIR_R4_Practitioner;
+def Practitioner: FHIR_R4_PractitionerRole;
