@@ -15,9 +15,10 @@ module {
 # not ideal, but I haven't thought of a better way yet.
 #
 # NOTE: Some example terminology system imports are as follows:
-import "loinc.org"       as $loinc            { search: "./code-system" };
-import "snomed.info/sct" as $sct              { search: "./code-system" };
-import "urn:ietf:bcp:47" as $urn_ietf_bcp_47  { search: "./code-system" };
+import "loinc.org"                  as $loinc            { search: "./code-system" };
+import "nucc.org/provider-taxonomy" as $nucc_p           { search: "./code-system" };
+import "snomed.info/sct"            as $sct              { search: "./code-system" };
+import "urn:ietf:bcp:47"            as $urn_ietf_bcp_47  { search: "./code-system" };
 
 
 ##
@@ -26,9 +27,10 @@ import "urn:ietf:bcp:47" as $urn_ietf_bcp_47  { search: "./code-system" };
 def code_system:
 {
 # Here are some examples.  Uncomment these are you need them.
-  "http://loinc.org":       $loinc            [],
-  "http://snomed.info/sct": $sct              [],
-  "urn:ietf:bcp:47":        $urn_ietf_bcp_47  []
+  "http://loinc.org":                  $loinc            [],
+  "http://nucc.org/provider-taxonomy": $nucc_p           [],
+  "http://snomed.info/sct":            $sct              [],
+  "urn:ietf:bcp:47":                   $urn_ietf_bcp_47  []
 };
 
 
