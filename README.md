@@ -236,32 +236,25 @@ As always, remember to source the file after you have made changes to it.
 ```bash
 # The fhir-jq installation directory.
 export FHIR_JQ="${HOME}/.jq/fhir"
+export PATH="${PATH}:${FHIR_JQ}/../fhir-jq/bin"
 mkdir -p "${FHIR_JQ}"
-
-##
-# fhir-jq is used just like jq, but it injects the path to the fhir-jq
-# module when invoked.  All other `jq` args are passed along to jq.
-#
-function fhir-jq() {
-  jq -L "${FHIR_JQ}" "${@}"
-}
 ```
 
 From the directory where you downloaded the sources, copy the module files
 into the destination directory:
 
 ```bash
-cp -a "./module/fhir/*" "${FHIR_JQ}/"
+cp -a "./module/*" "${FHIR_JQ}/"
 ```
 
 | Tip |
 | --- |
-| If you set `FHIR_JQ="~/.jq/fhir"` and copy the module there, `jq` should be able to discover the it automatically, since `~/.jq` is included in the default module search path.  This means you won't need to use the `fhir-jq` shell function to `include` the module in your `jq` filters. |
+| If you set `FHIR_JQ="${HOME}/.jq/fhir"` and copy the module there, `jq` should be able to discover the it automatically, since `${HOME}/.jq` is included in the default module search path.  This means you won't need to use the `fhir-jq` shell function to `include` the module in your `jq` filters. |
 
 | Warning(s) |
 | ---------- |
-| This module is still in _very early_ development **and is subject to change**. |
-| If you already have custom logic in a `~/.jq` **file** (_not a directory_), you will have to put `fhir-jq` into a folder and use the `fhir-jq` shell function. |
+| This module is still in _very early_ development **and is subject to sudden changes**. |
+| If you already have custom logic in a `~/.jq` **file** (_not a directory_), you can put your `~/.jq` file into `~/.jq/jq.jq` (yep, really) and put `module/*` into `~/.jq/`. |
 
 #### System Wide
 
@@ -277,10 +270,17 @@ If you can place the `module` contents into any of these directories, `jq`
 should be able to use the custom `fhir-jq` module functions without you
 having to specify the `-L` flag when you invoke `jq`.
 
+The recommended place for the scripts provided in `fhir-jq/bin` is `/usr/local/bin`.
+
 </details>
 
 ## Contributing
 <details><summary>Click to see contribution details...</summary>
+
+### Learning `jq`.
+
+If this project excites you but you don't know `jq` - I recommend giving the
+`jq` [exercism](https://exercism.org/tracks/jq) track a look.
 
 ---
 ### Feedback
