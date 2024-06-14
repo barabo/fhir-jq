@@ -15,22 +15,25 @@ module {
 # not ideal, but I haven't thought of a better way yet.
 #
 # NOTE: Some example terminology system imports are as follows:
-import "loinc.org"                  as $loinc            { search: "./code-system" };
-import "nucc.org/provider-taxonomy" as $nucc_p           { search: "./code-system" };
-import "snomed.info/sct"            as $sct              { search: "./code-system" };
-import "urn:ietf:bcp:47"            as $urn_ietf_bcp_47  { search: "./code-system" };
+import "loinc.org"                   as $loinc           { search: "./code-system" };
+import "nucc.org/provider-taxonomy"  as $nucc_p          { search: "./code-system" };
+import "snomed.info/sct"             as $sct             { search: "./code-system" };
+import "urn:ietf:bcp:47"             as $urn_ietf_bcp_47 { search: "./code-system" };
+import "allergyintolerance-clinical" as $$hl7_cs_aic     { search: "./code-system/terminology.hl7.org/CodeSystem" };
 
 
 ##
-# Maps a code system URI to the imported terminology cache.
+# Maps a code system URI as found in a FHIR document to the imported
+# terminology data module cache.
 #
 def code_system:
 {
-# Here are some examples.  Uncomment these are you need them.
-  "http://loinc.org":                  $loinc            [],
-  "http://nucc.org/provider-taxonomy": $nucc_p           [],
-  "http://snomed.info/sct":            $sct              [],
-  "urn:ietf:bcp:47":                   $urn_ietf_bcp_47  []
+# Here are some examples.  Uncomment these as you need them.
+  "http://loinc.org":                                                  $loinc            [],
+  "http://nucc.org/provider-taxonomy":                                 $nucc_p           [],
+  "http://snomed.info/sct":                                            $sct              [],
+  "http://terminology.hl7.org/CodeSystem/allergyintolerance-clinical": $hl7_cs_aic       [],
+  "urn:ietf:bcp:47":                                                   $urn_ietf_bcp_47  []
 };
 
 

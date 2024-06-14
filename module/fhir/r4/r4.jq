@@ -17,6 +17,26 @@ import "fhir/config" as $cfg;
 
 
 ##
+# A FHIR AllergyIntolerance with a reference to the fhir-jq config.
+#
+def FHIR_R4_AllergyIntolerance(config):
+    FHIR_Resource("AllergyIntolerance"; config)
+
+  # Convert the id to a number, or leave it as is.
+  | if config.resource.tryNumericalId then
+      .id |= (tonumber? // .)
+    end
+
+  # Inject the concept codings, if enabled.
+  | if config.coding.concepts.value then
+      .code |= injectConcepts
+      .clinicalStatus |= injectConcepts
+      .verificationStatus |= injectConcepts
+    end
+;
+
+
+##
 # A FHIR Encounter with a reference to the fhir-jq config.
 #
 def FHIR_R4_Encounter(config):
@@ -27,7 +47,7 @@ def FHIR_R4_Encounter(config):
       .id |= (tonumber? // .)
     end
 
-  # Inject the concept for the type codings, if enabled.
+  # Inject the concept codings, if enabled.
   | if config.coding.concepts.value then
       .type |= injectConcepts
     end
@@ -75,12 +95,14 @@ def FHIR_R4_PractitionerRole(config):
 
 
 # 0-arity aliases to inject the fhir-jq config.
+def FHIR_R4_AllergyIntolerance: FHIR_R4_AllergyIntolerance($cfg[0]);
 def FHIR_R4_Encounter: FHIR_R4_Encounter($cfg[0]);
 def FHIR_R4_Practitioner: FHIR_R4_Practitioner($cfg[0]);
 def FHIR_R4_PractitionerRole: FHIR_R4_PractitionerRole($cfg[0]);
 
 
 # Aliases to allow not specifying the revision for each Resource type.
+def AllergyIntolerance: FHIR_R4_AllergyIntolerance;
 def Encounter: FHIR_R4_Encounter;
 def Practitioner: FHIR_R4_Practitioner;
 def Practitioner: FHIR_R4_PractitionerRole;

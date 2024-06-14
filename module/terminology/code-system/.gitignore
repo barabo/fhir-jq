@@ -1,1 +1,2 @@
-**/*.json
+# Enable this for production.
+# **/*.json
