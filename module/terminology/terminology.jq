@@ -19,7 +19,7 @@ import "loinc.org"                   as $loinc           { search: "./code-syste
 import "nucc.org/provider-taxonomy"  as $nucc_p          { search: "./code-system" };
 import "snomed.info/sct"             as $sct             { search: "./code-system" };
 import "urn:ietf:bcp:47"             as $urn_ietf_bcp_47 { search: "./code-system" };
-import "allergyintolerance-clinical" as $$hl7_cs_aic     { search: "./code-system/terminology.hl7.org/CodeSystem" };
+import "allergyintolerance-clinical" as $hl7_cs_aic      { search: "./code-system/terminology.hl7.org/CodeSystem" };
 
 
 ##

@@ -30,8 +30,8 @@ def FHIR_R4_AllergyIntolerance(config):
   # Inject the concept codings, if enabled.
   | if config.coding.concepts.value then
       .code |= injectConcepts
-      .clinicalStatus |= injectConcepts
-      .verificationStatus |= injectConcepts
+ |    .clinicalStatus |= injectConcepts
+ |    .verificationStatus |= injectConcepts
     end
 ;
 
