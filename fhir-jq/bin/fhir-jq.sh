@@ -18,7 +18,6 @@ set -e
 set -o pipefail
 set -u
 
-
 TERMINOLOGY_DB="${FHIR_JQ}/terminology/concepts.db"
 export FHIR_JQ_LOG="${FHIR_JQ}/terminology/logs"
 mkdir -p "${FHIR_JQ_LOG}"
@@ -146,8 +145,8 @@ function fhir-jq() {
   rm -f "${code_log}" "${system_log}"
 
   # Start jq with stderr stream readers.
-  2> >(missing-code-system-reader | tee -a "${system_log}" >&2) \
-  2> >(missing-code-reader | tee -a "${code_log}" >&2) \
+#  2> >(missing-code-system-reader | tee -a "${system_log}" >&2) \
+#  2> >(missing-code-reader | tee -a "${code_log}" >&2) \
   jq -L "${FHIR_JQ}" "${@}"
   local rc=${?}
 
