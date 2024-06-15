@@ -31,5 +31,7 @@ include "fhir/r4";
 ###############################################################################
 def AllergyIntolerance: FHIR_R4_AllergyIntolerance($cfg[0]);
 def Encounter: FHIR_R4_Encounter($cfg[0]);
+def Location: FHIR_R4_Location($cfg[0]);
+def Organization: FHIR_R4_Organization($cfg[0]);
 def Practitioner: FHIR_R4_Practitioner($cfg[0]);
 def PractitionerRole: FHIR_R4_PractitionerRole($cfg[0]);

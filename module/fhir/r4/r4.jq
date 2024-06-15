@@ -45,6 +45,22 @@ def FHIR_R4_Encounter(config):
 
 
 ##
+# A FHIR Location with a reference to the fhir-jq config.
+#
+def FHIR_R4_Location(config):
+    FHIR_Resource("Location"; config)
+;
+
+
+##
+# A FHIR Organization with a reference to the fhir-jq config.
+#
+def FHIR_R4_Organization(config):
+    FHIR_Resource("Organization"; config)
+;
+
+
+##
 # A FHIR Practitioner with a reference to the fhir-jq config.
 #
 def FHIR_R4_Practitioner(config):
@@ -64,7 +80,7 @@ def FHIR_R4_Practitioner(config):
 
 
 ##
-# A FHIR Practitioner with a reference to the fhir-jq config.
+# A FHIR PractitionerRole with a reference to the fhir-jq config.
 #
 def FHIR_R4_PractitionerRole(config):
     FHIR_Resource("PractitionerRole"; config)
@@ -85,6 +101,8 @@ def FHIR_R4_PractitionerRole(config):
 # 0-arity aliases to inject the fhir-jq config.
 def FHIR_R4_AllergyIntolerance: FHIR_R4_AllergyIntolerance($cfg[0]);
 def FHIR_R4_Encounter: FHIR_R4_Encounter($cfg[0]);
+def FHIR_R4_Location: FHIR_R4_Location($cfg[0]);
+def FHIR_R4_Organization: FHIR_R4_Organization($cfg[0]);
 def FHIR_R4_Practitioner: FHIR_R4_Practitioner($cfg[0]);
 def FHIR_R4_PractitionerRole: FHIR_R4_PractitionerRole($cfg[0]);
 
@@ -92,5 +110,7 @@ def FHIR_R4_PractitionerRole: FHIR_R4_PractitionerRole($cfg[0]);
 # Aliases to allow not specifying the revision for each Resource type.
 def AllergyIntolerance: FHIR_R4_AllergyIntolerance;
 def Encounter: FHIR_R4_Encounter;
+def Location: FHIR_R4_Location;
+def Organization: FHIR_R4_Organization;
 def Practitioner: FHIR_R4_Practitioner;
 def Practitioner: FHIR_R4_PractitionerRole;
