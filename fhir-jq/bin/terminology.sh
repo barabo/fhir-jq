@@ -36,14 +36,16 @@ set -e
 set -o pipefail
 set -u
 
+THIS="$( basename "${0}" )"
+
 
 ##
 # Display usage.
 #
 function usage() {
-  local this="$( basename "${1}" )"
+  local message="${1:-}"
 cat <<USAGE
-Usage: ${this} [options] [object] [command] [command-options]
+Usage: ${THIS} [options] [object] [command] [command-options]
 
 Objects:
   code-system
@@ -71,5 +73,27 @@ Options:
 USAGE
 }
 
+# Display usage if no arguments.
+(( $# < 1 )) && usage && exit 0
 
-usage
+# Add an empty code-system to the module.
+if [[ "${1} ${2}" == "code-system add" ]]; then
+  shift 2
+  # If the next parameter is empty, display usage.
+  [[ -z "${1:-}" ]] && usage && exit 1
+  code_system="${1##*//}"
+  term_dir="${FHIR_JQ}/terminology"
+  data_file="${term_dir}/code-system/${code_system}.json"
+  cs_dir="$( dirname "${code_system}" )"
+  var_name="\$$( basename "${code_system}" )"
+  echo "  code_system: ${code_system}"
+  echo "  data_file: ${data_file}"
+  echo "  cs_dir: ${cs_dir}"
+  echo "  var_name: ${var_name}"
+  echo "Add code-system: ${1}"
+  exit 0
+fi
+
+# Unhandled command.
+exit 1
+
