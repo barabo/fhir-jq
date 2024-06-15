@@ -19,6 +19,11 @@ def FHIR_Resource(type; config):
     "ERROR: \( $__loc__ ): type \(type) <> resourceType = '\(.resourceType)'\n"
     | halt_error(1)
   end
+
+  # If there's an id and it should be numeric, try to convert it.
+  | if config.resource.tryNumericalId then
+      .id |= (tonumber? // .)
+    end
 ;
 
 

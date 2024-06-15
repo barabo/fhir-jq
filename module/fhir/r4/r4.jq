@@ -22,16 +22,11 @@ import "fhir/config" as $cfg;
 def FHIR_R4_AllergyIntolerance(config):
     FHIR_Resource("AllergyIntolerance"; config)
 
-  # Convert the id to a number, or leave it as is.
-  | if config.resource.tryNumericalId then
-      .id |= (tonumber? // .)
-    end
-
   # Inject the concept codings, if enabled.
   | if config.coding.concepts.value then
       .code |= injectConcepts
- |    .clinicalStatus |= injectConcepts
- |    .verificationStatus |= injectConcepts
+    | .clinicalStatus |= injectConcepts
+    | .verificationStatus |= injectConcepts
     end
 ;
 
@@ -41,11 +36,6 @@ def FHIR_R4_AllergyIntolerance(config):
 #
 def FHIR_R4_Encounter(config):
     FHIR_Resource("Encounter"; config)
-
-  # Convert the id to a number, or leave it as is.
-  | if config.resource.tryNumericalId then
-      .id |= (tonumber? // .)
-    end
 
   # Inject the concept codings, if enabled.
   | if config.coding.concepts.value then
@@ -60,17 +50,16 @@ def FHIR_R4_Encounter(config):
 def FHIR_R4_Practitioner(config):
     FHIR_Resource("Practitioner"; config)
 
-  # Convert the id to a number, or leave it as is.
-  | .id |= (tonumber? // .)
-
   # Insert the NPI, if present.
   | .npi = (.identifier[0].value | tonumber? // .)
 
   # Combine the name parts into a full name.
   | .full_name = (.name[0] | "\(.prefix[0]) \(.given[0]) \(.family)")
 
-  # Inject the concept_id for gender.
-  | .gender_concept_id = if .gender = "male" then 8507 else 8532 end
+  # Inject the concept codings, if enabled.
+  | if config.coding.concepts.value then
+      .gender_concept_id = if .gender = "male" then 8507 else 8532 end
+    end
 ;
 
 
@@ -80,12 +69,11 @@ def FHIR_R4_Practitioner(config):
 def FHIR_R4_PractitionerRole(config):
     FHIR_Resource("PractitionerRole"; config)
 
-  # Convert the id to a number, or leave it as is.
-  | .id |= (tonumber? // .)
-
   # Inject concepts for the specialty and code.
-  | .code |= injectConcepts
-  | .specialty |= injectConcepts
+  | if config.coding.concepts.value then
+      .code |= injectConcepts
+    | .specialty |= injectConcepts
+    end
 
   # Dereference any useful ids.
   | .location_ids = [.location[] | dereference]
