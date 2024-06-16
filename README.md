@@ -245,15 +245,16 @@ From the directory where you downloaded the sources, copy the module files
 into the destination directory:
 
 ```bash
-cp -a "./module/*" "${FHIR_JQ}/"
+cp -a ./module/* "${FHIR_JQ}/"
+cp -a ./fhir-jq "${FHIR_JQ}/../"
 ```
 
 | Tip |
-| --- |
-| If you set `FHIR_JQ="${HOME}/.jq/fhir"` and copy the module there, `jq` should be able to discover the it automatically, since `${HOME}/.jq` is included in the default module search path.  This means you won't need to use the `fhir-jq` shell function to `include` the module in your `jq` filters. |
+|:--- |
+| If you set `FHIR_JQ="${HOME}/.jq/fhir"` and copy the module there, `jq` should be able to discover it automatically, since `${HOME}/.jq` is included in the default module search path.  This means you won't need to use `fhir-jq` to `include` the module in your `jq` filters. |
 
 | Warning(s) |
-| ---------- |
+|:---------- |
 | This module is still in _very early_ development **and is subject to sudden changes**. |
 | If you already have custom logic in a `~/.jq` **file** (_not a directory_), you can put your `~/.jq` file into `~/.jq/jq.jq` (yep, really) and put `module/*` into `~/.jq/`. |
 
