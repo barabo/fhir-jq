@@ -4,7 +4,8 @@
 [exercism]: https://exercism.org/tracks/jq
 [installation notes]: https://github.com/jqlang/jq?tab=readme-ov-file#installation
 [jq module]: https://github.com/jqlang/jq?tab=readme-ov-file#installation
-
+[SNOMED CT Editions]: https://confluence.ihtsdotools.org/display/DOCEXTPG/4.4.2+Edition+URI+Examples
+[Using SNOMED CT]: https://terminology.hl7.org/SNOMEDCT.html
 
 # fhir-jq
 A [jq module] to make it easier to work with FHIR resources in `jq`!
@@ -273,6 +274,106 @@ should be able to use the custom `fhir-jq` module functions without you
 having to specify the `-L` flag when you invoke `jq`.
 
 The recommended place for the scripts provided in `fhir-jq/bin` is `/usr/local/bin`.
+
+</details>
+
+## Terminology
+<details><summary>Click to read about loading terminology...</summary>
+
+---
+This tool gives you the ability to inject code `concept` values into your documents
+as they are being scanned by `jq`.  This can be useful if you need to then change the
+way you handle documents based on the 'type' of codings they contain.  One example of
+this is when translating FHIR to OMOP - in many cases the OMOP CDM requires that
+data in certain tables be sourced only from qualifying encounters, observations,
+measurements, etc.  To categorize the source data, the domain of the resource code 
+can be used, which can be discovered from the code concept.
+
+This tool does not include terminology sets, since many of them are proprietary or
+require end user agreements that would be between yourself and the code set provider.
+
+However, you are free to download terminology sets and make them available to this
+tool using the helpers provided.
+
+The main thing to know is that when `fhir-jq` encounters a terminology-coded code in
+your source documents, it maps the code `"system"` value to a cached set of codes
+which are prepared in advance by you (via the provided helper scripts).
+
+The cached terminology data modules are to be stored in your module `terminology`
+directory, under the `code-system` directory.  The URI of the code system determines
+where to place the cached terminology set.
+
+Note: Value systems are not yet supported, but will follow an analogous structure.
+
+For example, the SNOMED code system uri `https://snomed.info/sct` maps to
+`terminology/code-system/snomed.info/sct.json`.  If you wanted to use a specific
+SNOMED CT code system such as `https://snomed.info/sct/900000000000207008/version/20130731`,
+the codes for that system would be cached in
+`terminology/code-system/snomed.info/sct/900000000000207008/version/20130731.json`.
+
+Your cached codes must map the value of the coding `"code"` value to the code
+concept values you want to inject into your document.
+
+For example, if you wish to inject the concept for SNOMED code `1234` into an
+`Encounter.type[].coding`, the `terminology/code-system/snomed.info/sct.json` file
+must contain an entry such as:
+
+```json
+{
+  "1234": {
+    "concept_id": 4567,
+    "concept_code": "1234"
+  }
+}
+```
+
+To enable this terminology data module, there must be a mapping in the 
+`terminology/terminology.jq` module from the `"system"` value to the imported
+data module.
+
+```jq
+# NOTE: Some example terminology system imports are as follows:
+import "loinc.org"                       as $loinc           { search: "./code-system" };
+import "nucc.org/provider-taxonomy"      as $nucc_p          { search: "./code-system" };
+import "snomed.info/sct"                 as $sct             { search: "./code-system" };  # <---- IMPORTED DATA MODULE
+import "urn:ietf:bcp:47"                 as $urn_ietf_bcp_47 { search: "./code-system" };
+import "allergyintolerance-clinical"     as $hl7_cs_aic      { search: "./code-system/terminology.hl7.org/CodeSystem" };
+import "allergyintolerance-verification" as $hl7_cs_aiv      { search: "./code-system/terminology.hl7.org/CodeSystem" };
+
+##
+# Maps a code system URI as found in a FHIR document to the imported
+# terminology data module cache.
+#
+def code_system:
+{
+  "http://loinc.org":                                                      $loinc            [],
+  "http://nucc.org/provider-taxonomy":                                     $nucc_p           [],
+  "http://snomed.info/sct":                                                $sct              [],
+# ^^^^^^^^^^^^^^^^^^^^^^^^ <---- MAPPED "system" URI to imported data module
+  "http://terminology.hl7.org/CodeSystem/allergyintolerance-clinical":     $hl7_cs_aic       [],
+  "http://terminology.hl7.org/CodeSystem/allergyintolerance-verification": $hl7_cs_aiv       [],
+  "urn:ietf:bcp:47":                                                       $urn_ietf_bcp_47  []
+};
+```
+
+The `fhir-jq/bin/terminology.sh` helper script (which is a work in progress) is designed
+to make it easy to add terminology systems to `fhir-jq` through a set of CLI commands, which
+update the `terminology/terminology.jq` module.  Since this is still being built, you may
+have to manually add your code systems to enable them.
+
+The `terminology/terminology.jq` module provides some helper functions to
+allow you to inject concepts more eaily.
+
+In your own filters, you can use them like this:
+
+```jq
+include "fhir";
+FHIR_Resource("Encounter")
+| .type |= injectConcepts
+```
+
+The provided `fhir/r4` module already provides an `Encounter` helper which injects concepts for you,
+but only if your `fhir/config` data module is configured to do so (the default is to inject concepts).
 
 </details>
 
