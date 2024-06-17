@@ -10,9 +10,12 @@ module {
 };
 
 
+# Include helper modules.
 include "fhir/common";
 include "terminology";
 
+
+# Import data modules.
 import "fhir/config" as $cfg;
 
 
@@ -24,10 +27,13 @@ def FHIR_R4_AllergyIntolerance(config):
 
   # Inject the concept codings, if enabled.
   | if config.coding.concepts.value then
-      .code |= injectConcepts
-    | .clinicalStatus |= injectConcepts
-    | .verificationStatus |= injectConcepts
+      .code.coding |= map(.concept = concept)
+    | .clinicalStatus.coding |= map(.concept = concept)
+    | .verificationStatus.coding |= map(.concept = concept)
     end
+
+  # Inject the patient ID.
+  | .patient.id = (.patient | dereference)
 ;
 
 
