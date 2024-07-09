@@ -25,13 +25,6 @@ import "fhir/config" as $cfg;
 def FHIR_R4_AllergyIntolerance(config):
     FHIR_Resource("AllergyIntolerance"; config)
 
-  # Inject the concept codings, if enabled.
-  | if config.coding.concepts.value then
-      .clinicalStatus.coding |= map(.concept = concept)
-    | .code.coding |= map(.concept = concept)
-    | .verificationStatus.coding |= map(.concept = concept)
-    end
-
   # Inject the patient ID.
   | .patient.id = (.patient | dereference)
 ;
@@ -47,13 +40,6 @@ def FHIR_R4_Encounter(config):
   | (.participant |= map(.individual.id = (.individual | dereference)))
   | (.location |= map(.location.id = (.location | dereference)))
   | (.serviceProvider.id = (.serviceProvider | dereference))
-
-  # Inject the concept codings, if enabled.
-  | if config.coding.concepts.value then
-      .type |= injectConcepts |
-      .class.concept = (.class | concept) |
-      if (has("reasonCode")) then .reasonCode |= injectConcepts end
-    end
 ;
 
 
@@ -70,11 +56,6 @@ def FHIR_R4_Location(config):
 #
 def FHIR_R4_Medication(config):
     FHIR_Resource("Medication"; config)
-
-  # Inject concepts.
-  | if config.coding.concepts.value then
-      .code.coding |= map(.concept = concept)
-    end
 ;
 
 
@@ -83,11 +64,6 @@ def FHIR_R4_Medication(config):
 #
 def FHIR_R4_MedicationAdministration(config):
     FHIR_Resource("MedicationAdministration"; config)
-
-  # Inject concepts.
-  | if config.coding.concepts.value then
-      .medicationCodeableConcept.coding |= map(.concept = concept)
-    end
 
   # Dereference IDs to numbers.
   | .subject.id = (.subject | dereference)
@@ -103,20 +79,6 @@ def FHIR_R4_MedicationAdministration(config):
 #
 def FHIR_R4_MedicationRequest(config):
     FHIR_Resource("MedicationRequest"; config)
-
-  # Inject concepts.
-  | if config.coding.concepts.value then
-      if has ("medicationCodeableConcept") then
-        .medicationCodeableConcept.coding |= map(.concept = concept)
-      end
-    | if has("dosageInstruction") then
-        .dosageInstruction |= map(
-          if has("doseAndRate") then
-            .doseAndRate | map(.type.coding |= map(.concept = concept))
-          end
-        )
-      end
-    end
 
   # Dereference IDs to numbers.
   | .subject.id = (.subject | dereference)
@@ -141,21 +103,6 @@ def FHIR_R4_Observation(config):
   # Dereference IDs to numbers.
   | .subject.id = (.subject | dereference)
   | .encounter.id = (.encounter | dereference)
-
-  # Inject concepts.
-  | if config.coding.concepts.value then
-      .category |= injectConcepts
-    | .code.coding |= map(.concept = concept)
-    | if has("valueQuantity") then
-        .valueQuantity.concept = (.valueQuantity | concept)
-      end
-    | if has("component") then
-        .component |= map(
-          .code.coding |= injectConcept
-          | .valueQuantity.concept = (.valueQuantity | concept)
-        )
-      end
-    end
 ;
 
 
@@ -164,6 +111,24 @@ def FHIR_R4_Observation(config):
 #
 def FHIR_R4_Organization(config):
     FHIR_Resource("Organization"; config)
+;
+
+
+##
+# A FHIR Patient with a reference to the fhir-jq config.
+#
+def FHIR_R4_Patient(config):
+    FHIR_Resource("Patient"; config)
+
+  # Combine the name parts into a full name.
+  | .full_name = (.name[0] | "\(.prefix[0]) \(.given[0]) \(.family)")
+
+  # Inject the concept codings, if enabled.
+  | if config.coding.concepts.value then
+      .gender_concept_id = if has("gender") then
+        if .gender == "male" then 8507 elif .gender == "female" then 8532 end
+      end
+    end
 ;
 
 
@@ -181,7 +146,9 @@ def FHIR_R4_Practitioner(config):
 
   # Inject the concept codings, if enabled.
   | if config.coding.concepts.value then
-      .gender_concept_id = if .gender = "male" then 8507 else 8532 end
+      .gender_concept_id = if has("gender") then
+        if .gender == "male" then 8507 elif .gender == "female" then 8532 end
+      end
     end
 ;
 
@@ -191,12 +158,6 @@ def FHIR_R4_Practitioner(config):
 #
 def FHIR_R4_PractitionerRole(config):
     FHIR_Resource("PractitionerRole"; config)
-
-  # Inject concepts for the specialty and code.
-  | if config.coding.concepts.value then
-      .code |= injectConcepts
-    | .specialty |= injectConcepts
-    end
 
   # Dereference any useful ids.
   | .location_ids = [.location[] | dereference]
@@ -214,6 +175,7 @@ def FHIR_R4_MedicationAdministration: FHIR_R4_MedicationAdministration($cfg[0]);
 def FHIR_R4_MedicationRequest: FHIR_R4_MedicationRequest($cfg[0]);
 def FHIR_R4_Observation: FHIR_R4_Observation($cfg[0]);
 def FHIR_R4_Organization: FHIR_R4_Organization($cfg[0]);
+def FHIR_R4_Patient: FHIR_R4_Patient($cfg[0]);
 def FHIR_R4_Practitioner: FHIR_R4_Practitioner($cfg[0]);
 def FHIR_R4_PractitionerRole: FHIR_R4_PractitionerRole($cfg[0]);
 
@@ -227,5 +189,6 @@ def MedicationAdministration: FHIR_R4_MedicationAdministration;
 def MedicationRequest: FHIR_R4_MedicationRequest;
 def Observation: FHIR_R4_Observation;
 def Organization: FHIR_R4_Organization;
+def Patient: FHIR_R4_Patient;
 def Practitioner: FHIR_R4_Practitioner;
 def PractitionerRole: FHIR_R4_PractitionerRole;
