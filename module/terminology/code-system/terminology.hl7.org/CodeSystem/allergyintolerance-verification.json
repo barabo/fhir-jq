@@ -1,4 +1,5 @@
 {
   "confirmed": {
+    "concept_id":4194404,"concept_name":"Disorder confirmed","domain_id":"Condition","vocabulary_id":"SNOMED","concept_class_id":"Context-dependent","standard_concept":"S","concept_code":"395098000","valid_start_date":20030131,"valid_end_date":20991231,"invalid_reason":""
   }
 }

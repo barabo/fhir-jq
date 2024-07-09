@@ -1,0 +1,14 @@
+{
+  "AMB": {
+    "concept_code": "AMB",
+    "concept_id": 123
+  },
+  "IMP": {
+    "concept_code": "IMP",
+    "concept_id": 234
+  },
+  "EMER": {
+    "concept_code": "EMER",
+    "concept_id": 345
+  }
+}
