@@ -19,6 +19,7 @@ import "id.loc.gov/vocabulary/iso639-1"       as $iso639_1          { search: ".
 import "loinc.org"                            as $loinc             { search: "./code-system" };
 import "nucc.org/provider-taxonomy"           as $nucc_p            { search: "./code-system" };
 import "www.nlm.nih.gov/research/umls/rxnorm" as $rxnorm            { search: "./code-system" };
+import "www.nubc.org/patient-discharge"       as $nubc              { search: "./code-system" };
 import "snomed.info/sct"                      as $sct               { search: "./code-system" };
 import "unitsofmeasure.org"                   as $units_of_measure  { search: "./code-system" };
 import "urn:ietf:bcp:47"                      as $urn_ietf_bcp_47   { search: "./code-system" };
@@ -53,6 +54,7 @@ def code_system:
   "http://terminology.hl7.org/CodeSystem/v3-ParticipationType":            $hl7_cs_v3particip [],
   "http://unitsofmeasure.org":                                             $units_of_measure  [],
   "http://www.nlm.nih.gov/research/umls/rxnorm":                           $rxnorm            [],
+  "http://www.nubc.org/patient-discharge":                                 $nubc              [],
   "urn:ietf:bcp:47":                                                       $urn_ietf_bcp_47   [],
   "urn:oid:2.16.840.1.113883.6.238":                                       $urn_oid_2_16_840  []
 };
