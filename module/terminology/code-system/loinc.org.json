@@ -1822,5 +1822,29 @@
     "valid_start_date": 19960906,
     "valid_end_date": 20991231,
     "invalid_reason": ""
+  },
+  "8462-4": {
+    "concept_id": 3012888,
+    "concept_name": "Diastolic blood pressure",
+    "domain_id": "Measurement",
+    "vocabulary_id": "LOINC",
+    "concept_class_id": "Clinical Observation",
+    "standard_concept": "S",
+    "concept_code": "8462-4",
+    "valid_start_date": 19960906,
+    "valid_end_date": 20991231,
+    "invalid_reason": ""
+  },
+  "8480-6": {
+    "concept_id": 3004249,
+    "concept_name": "Systolic blood pressure",
+    "domain_id": "Measurement",
+    "vocabulary_id": "LOINC",
+    "concept_class_id": "Clinical Observation",
+    "standard_concept": "S",
+    "concept_code": "8480-6",
+    "valid_start_date": 19960906,
+    "valid_end_date": 20991231,
+    "invalid_reason": ""
   }
 }

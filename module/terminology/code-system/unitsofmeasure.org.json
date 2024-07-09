@@ -318,5 +318,17 @@
     "valid_start_date": 19700101,
     "valid_end_date": 20991231,
     "invalid_reason": ""
+  },
+  "mm[Hg]": {
+    "concept_id": 8876,
+    "concept_name": "millimeter mercury column",
+    "domain_id": "Unit",
+    "vocabulary_id": "UCUM",
+    "concept_class_id": "Unit",
+    "standard_concept": "S",
+    "concept_code": "mm[Hg]",
+    "valid_start_date": 19700101,
+    "valid_end_date": 20991231,
+    "invalid_reason": ""
   }
 }
