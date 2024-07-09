@@ -15,13 +15,17 @@ module {
 # not ideal, but I haven't thought of a better way yet.
 #
 # NOTE: Some example terminology system imports are as follows:
-import "loinc.org"                       as $loinc           { search: "./code-system" };
-import "nucc.org/provider-taxonomy"      as $nucc_p          { search: "./code-system" };
-import "snomed.info/sct"                 as $sct             { search: "./code-system" };
-import "urn:ietf:bcp:47"                 as $urn_ietf_bcp_47 { search: "./code-system" };
-import "allergyintolerance-clinical"     as $hl7_cs_aic      { search: "./code-system/terminology.hl7.org/CodeSystem" };
-import "allergyintolerance-verification" as $hl7_cs_aiv      { search: "./code-system/terminology.hl7.org/CodeSystem" };
-
+import "loinc.org"                            as $loinc            { search: "./code-system" };
+import "nucc.org/provider-taxonomy"           as $nucc_p           { search: "./code-system" };
+import "www.nlm.nih.gov/research/umls/rxnorm" as $rxnorm           { search: "./code-system" };
+import "snomed.info/sct"                      as $sct              { search: "./code-system" };
+import "unitsofmeasure.org"                   as $units_of_measure { search: "./code-system" };
+import "urn:ietf:bcp:47"                      as $urn_ietf_bcp_47  { search: "./code-system" };
+import "allergyintolerance-clinical"          as $hl7_cs_aic       { search: "./code-system/terminology.hl7.org/CodeSystem" };
+import "allergyintolerance-verification"      as $hl7_cs_aiv       { search: "./code-system/terminology.hl7.org/CodeSystem" };
+import "dose-rate-type"                       as $hl7_cs_drt       { search: "./code-system/terminology.hl7.org/CodeSystem" };
+import "observation-category"                 as $hl7_cs_oc        { search: "./code-system/terminology.hl7.org/CodeSystem" };
+import "v3-ActCode"                           as $hl7_cs_v3act     { search: "./code-system/terminology.hl7.org/CodeSystem" };
 
 ##
 # Maps a code system URI as found in a FHIR document to the imported
@@ -30,12 +34,17 @@ import "allergyintolerance-verification" as $hl7_cs_aiv      { search: "./code-s
 def code_system:
 {
 # Here are some examples.  Uncomment these as you need them.
-  "http://loinc.org":                                                      $loinc            [],
-  "http://nucc.org/provider-taxonomy":                                     $nucc_p           [],
-  "http://snomed.info/sct":                                                $sct              [],
-  "http://terminology.hl7.org/CodeSystem/allergyintolerance-clinical":     $hl7_cs_aic       [],
-  "http://terminology.hl7.org/CodeSystem/allergyintolerance-verification": $hl7_cs_aiv       [],
-  "urn:ietf:bcp:47":                                                       $urn_ietf_bcp_47  []
+  "http://loinc.org":                                                      $loinc             [],
+  "http://nucc.org/provider-taxonomy":                                     $nucc_p            [],
+  "http://snomed.info/sct":                                                $sct               [],
+  "http://terminology.hl7.org/CodeSystem/allergyintolerance-clinical":     $hl7_cs_aic        [],
+  "http://terminology.hl7.org/CodeSystem/allergyintolerance-verification": $hl7_cs_aiv        [],
+  "http://terminology.hl7.org/CodeSystem/dose-rate-type":                  $hl7_cs_drt        [],
+  "http://terminology.hl7.org/CodeSystem/observation-category":            $hl7_cs_oc         [],
+  "http://terminology.hl7.org/CodeSystem/v3-ActCode":                      $hl7_cs_v3act      [],
+  "http://unitsofmeasure.org":                                             $units_of_measure  [],
+  "http://www.nlm.nih.gov/research/umls/rxnorm":                           $rxnorm            [],
+  "urn:ietf:bcp:47":                                                       $urn_ietf_bcp_47   []
 };
 
 
@@ -45,8 +54,11 @@ def code_system:
 #
 def concept:
   if .code == null then
-    "ERROR: . has no 'code' key! . = \(.)\n"
-    | halt_error(1)
+    "ERROR: . has no 'code' key! . = \(.)\n" | error
+    | {
+        "error": "no code provided!"
+      }
+#    | halt_error(1)
   elif .system == null then
     "ERROR: . has no 'system' key! . = \(.)\n"
     | halt_error(1)
