@@ -37,5 +37,6 @@ def MedicationAdministration: FHIR_R4_MedicationAdministration($cfg[0]);
 def MedicationRequest: FHIR_R4_MedicationRequest($cfg[0]);
 def Observation: FHIR_R4_Observation($cfg[0]);
 def Organization: FHIR_R4_Organization($cfg[0]);
+def Patient: FHIR_R4_Patient($cfg[0]);
 def Practitioner: FHIR_R4_Practitioner($cfg[0]);
 def PractitionerRole: FHIR_R4_PractitionerRole($cfg[0]);
