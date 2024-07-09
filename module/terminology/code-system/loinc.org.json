@@ -1846,5 +1846,89 @@
     "valid_start_date": 19960906,
     "valid_end_date": 20991231,
     "invalid_reason": ""
+  },
+  "LA28404-4": {
+    "concept_id": 36307969,
+    "concept_name": "Class I",
+    "domain_id": "Meas Value",
+    "vocabulary_id": "LOINC",
+    "concept_class_id": "Answer",
+    "standard_concept": "S",
+    "concept_code": "LA28404-4",
+    "valid_start_date": 19700101,
+    "valid_end_date": 20991231,
+    "invalid_reason": ""
+  },
+  "LA28405-1": {
+    "concept_id": 36309052,
+    "concept_name": "Class II",
+    "domain_id": "Meas Value",
+    "vocabulary_id": "LOINC",
+    "concept_class_id": "Answer",
+    "standard_concept": "S",
+    "concept_code": "LA28405-1",
+    "valid_start_date": 19700101,
+    "valid_end_date": 20991231,
+    "invalid_reason": ""
+  },
+  "LA28406-9": {
+    "concept_id": 36307909,
+    "concept_name": "Class III",
+    "domain_id": "Meas Value",
+    "vocabulary_id": "LOINC",
+    "concept_class_id": "Answer",
+    "standard_concept": "S",
+    "concept_code": "LA28406-9",
+    "valid_start_date": 19700101,
+    "valid_end_date": 20991231,
+    "invalid_reason": ""
+  },
+  "LA28407-7": {
+    "concept_id": 36307855,
+    "concept_name": "Class IV",
+    "domain_id": "Meas Value",
+    "vocabulary_id": "LOINC",
+    "concept_class_id": "Answer",
+    "standard_concept": "S",
+    "concept_code": "LA28407-7",
+    "valid_start_date": 19700101,
+    "valid_end_date": 20991231,
+    "invalid_reason": ""
+  },
+  "LA28409-3": {
+    "concept_id": 36309704,
+    "concept_name": "Objective evidence of minimal cardiovascular disease",
+    "domain_id": "Meas Value",
+    "vocabulary_id": "LOINC",
+    "concept_class_id": "Answer",
+    "standard_concept": "S",
+    "concept_code": "LA28409-3",
+    "valid_start_date": 19700101,
+    "valid_end_date": 20991231,
+    "invalid_reason": ""
+  },
+  "LA28410-1": {
+    "concept_id": 36309238,
+    "concept_name": "Objective evidence of moderately severe cardiovascular disease",
+    "domain_id": "Meas Value",
+    "vocabulary_id": "LOINC",
+    "concept_class_id": "Answer",
+    "standard_concept": "S",
+    "concept_code": "LA28410-1",
+    "valid_start_date": 19700101,
+    "valid_end_date": 20991231,
+    "invalid_reason": ""
+  },
+  "LA28411-9": {
+    "concept_id": 36308301,
+    "concept_name": "Objective evidence of severe cardiovascular disease",
+    "domain_id": "Meas Value",
+    "vocabulary_id": "LOINC",
+    "concept_class_id": "Answer",
+    "standard_concept": "S",
+    "concept_code": "LA28411-9",
+    "valid_start_date": 19700101,
+    "valid_end_date": 20991231,
+    "invalid_reason": ""
   }
 }
