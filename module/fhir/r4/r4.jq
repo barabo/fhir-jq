@@ -27,8 +27,8 @@ def FHIR_R4_AllergyIntolerance(config):
 
   # Inject the concept codings, if enabled.
   | if config.coding.concepts.value then
-      .code.coding |= map(.concept = concept)
-    | .clinicalStatus.coding |= map(.concept = concept)
+      .clinicalStatus.coding |= map(.concept = concept)
+    | .code.coding |= map(.concept = concept)
     | .verificationStatus.coding |= map(.concept = concept)
     end
 
@@ -43,9 +43,16 @@ def FHIR_R4_AllergyIntolerance(config):
 def FHIR_R4_Encounter(config):
     FHIR_Resource("Encounter"; config)
 
+  | (.subject.id = (.subject | dereference))
+  | (.participant |= map(.individual.id = (.individual | dereference)))
+  | (.location |= map(.location.id = (.location | dereference)))
+  | (.serviceProvider.id = (.serviceProvider | dereference))
+
   # Inject the concept codings, if enabled.
   | if config.coding.concepts.value then
-      .type |= injectConcepts
+      .type |= injectConcepts |
+      .class.concept = (.class | concept) |
+      if (has("reasonCode")) then .reasonCode |= injectConcepts end
     end
 ;
 
@@ -55,6 +62,92 @@ def FHIR_R4_Encounter(config):
 #
 def FHIR_R4_Location(config):
     FHIR_Resource("Location"; config)
+;
+
+
+##
+# A FHIR Medication with a reference to the fhir-jq config.
+#
+def FHIR_R4_Medication(config):
+    FHIR_Resource("Medication"; config)
+
+  # Inject concepts.
+  | if config.coding.concepts.value then
+      .code.coding |= map(.concept = concept)
+    end
+;
+
+
+##
+# A FHIR MedicationAdministration with a reference to the fhir-jq config.
+#
+def FHIR_R4_MedicationAdministration(config):
+    FHIR_Resource("MedicationAdministration"; config)
+
+  # Inject concepts.
+  | if config.coding.concepts.value then
+      .medicationCodeableConcept.coding |= map(.concept = concept)
+    end
+
+  # Dereference IDs to numbers.
+  | .subject.id = (.subject | dereference)
+  | .context.id = (.context | dereference)
+  | if has("reasonReference") then
+      .reasonReference |= map(.id = dereference)
+    end
+;
+
+
+##
+# A FHIR MedicationRequest with a reference to the fhir-jq config.
+#
+def FHIR_R4_MedicationRequest(config):
+    FHIR_Resource("MedicationRequest"; config)
+
+  # Inject concepts.
+  | if config.coding.concepts.value then
+      if has ("medicationCodeableConcept") then
+        .medicationCodeableConcept.coding |= map(.concept = concept)
+      end
+    | if has("dosageInstruction") then
+        .dosageInstruction |= map(
+          if has("doseAndRate") then
+            .doseAndRate | map(.type.coding |= map(.concept = concept))
+          end
+        )
+      end
+    end
+
+  # Dereference IDs to numbers.
+  | .subject.id = (.subject | dereference)
+  | .encounter.id = (.encounter | dereference)
+  | if has("medicationReference") then
+      .medicationReference.id = (.medicationReference | dereference)
+    end
+  | if has("requester") then
+      .requester.id = (.requester | dereference)
+    end
+  | if has("reasonReference") then
+      .reasonReference |= map(.id = dereference)
+    end
+;
+
+##
+# A FHIR Observation with a reference to the fhir-jq config.
+#
+def FHIR_R4_Observation(config):
+    FHIR_Resource("Observation"; config)
+
+  # Dereference IDs to numbers.
+  | .subject.id = (.subject | dereference)
+  | .encounter.id = (.encounter | dereference)
+
+  # Inject concepts.
+  | if config.coding.concepts.value then
+      .category |= injectConcepts
+    | .code.coding |= map(.concept = concept)
+    | .valueQuantity.concept = (.valueQuantity | concept)
+    end
 ;
 
 
@@ -108,6 +201,10 @@ def FHIR_R4_PractitionerRole(config):
 def FHIR_R4_AllergyIntolerance: FHIR_R4_AllergyIntolerance($cfg[0]);
 def FHIR_R4_Encounter: FHIR_R4_Encounter($cfg[0]);
 def FHIR_R4_Location: FHIR_R4_Location($cfg[0]);
+def FHIR_R4_Medication: FHIR_R4_Medication($cfg[0]);
+def FHIR_R4_MedicationAdministration: FHIR_R4_MedicationAdministration($cfg[0]);
+def FHIR_R4_MedicationRequest: FHIR_R4_MedicationRequest($cfg[0]);
+def FHIR_R4_Observation: FHIR_R4_Observation($cfg[0]);
 def FHIR_R4_Organization: FHIR_R4_Organization($cfg[0]);
 def FHIR_R4_Practitioner: FHIR_R4_Practitioner($cfg[0]);
 def FHIR_R4_PractitionerRole: FHIR_R4_PractitionerRole($cfg[0]);
@@ -117,6 +214,10 @@ def FHIR_R4_PractitionerRole: FHIR_R4_PractitionerRole($cfg[0]);
 def AllergyIntolerance: FHIR_R4_AllergyIntolerance;
 def Encounter: FHIR_R4_Encounter;
 def Location: FHIR_R4_Location;
+def Medication: FHIR_R4_Medication;
+def MedicationAdministration: FHIR_R4_MedicationAdministration;
+def MedicationRequest: FHIR_R4_MedicationRequest;
+def Observation: FHIR_R4_Observation;
 def Organization: FHIR_R4_Organization;
 def Practitioner: FHIR_R4_Practitioner;
-def Practitioner: FHIR_R4_PractitionerRole;
+def PractitionerRole: FHIR_R4_PractitionerRole;
