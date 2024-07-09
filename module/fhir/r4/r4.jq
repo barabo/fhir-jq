@@ -146,7 +146,15 @@ def FHIR_R4_Observation(config):
   | if config.coding.concepts.value then
       .category |= injectConcepts
     | .code.coding |= map(.concept = concept)
-    | .valueQuantity.concept = (.valueQuantity | concept)
+    | if has("valueQuantity") then
+        .valueQuantity.concept = (.valueQuantity | concept)
+      end
+    | if has("component") then
+        .component |= map(
+          .code.coding |= injectConcept
+          | .valueQuantity.concept = (.valueQuantity | concept)
+        )
+      end
     end
 ;
 
